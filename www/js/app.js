@@ -5,7 +5,20 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('starter', ['ionic'])
 
-.run(function($ionicPlatform, RequestsService) {
+.config(function($stateProvider, $urlRouterProvider) {
+    $urlRouterProvider.otherwise('/index');
+    $stateProvider
+        .state('printMessage', {
+            url: '/printMessage',
+            templateUrl: 'js/messages/printMessage.html',
+            params: {msg: null},
+            controller: function($scope, $stateParams) {
+                $scope.mssg = $stateParams.msg;
+            }
+    });
+})
+
+.run(function($ionicPlatform, RequestsService, $state, $rootScope) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -16,24 +29,22 @@ angular.module('starter', ['ionic'])
       StatusBar.styleDefault();
     }
 
-    var push = PushNotification.init({ "android": {"senderID": "510791354931"}});
+     var push = PushNotification.init({ "android": {"senderID": "510791354931", "sound": "true" }});
 
-    push.on('registration', function(data){
-      alert(data.registrationId);
-      RequestsService.register(data.registrationId).then(function(response) {
-          alert('Registered!');
-      });
-    });
+     push.on('registration', function(data){
+//       alert(data.registrationId);
+       RequestsService.register(data.registrationId).then(function(response) {
+         alert('Registered!');
+       });
+     });
 
-    push.on('notification', function(data){
-      alert(data.message);
-    });
 
-    push.on('error', function(e){
-      alert('Error Occured\n' + e.message);
-    });
+     push.on('notification', function(data){
+        $state.go('printMessage', { msg: data.message });
+     });
 
+     push.on('error', function(e){
+       alert('Error Occured\n' + e.message);
+     });
   });
-
-
 })
