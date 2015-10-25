@@ -10,7 +10,7 @@ angular.module('starter', ['ionic'])
     $stateProvider
         .state('printMessage', {
             url: '/printMessage',
-            templateUrl: 'js/messages/printMessage.html',
+            templateUrl: 'messages/printMessage.html',
             params: {msg: null},
             controller: function($scope, $stateParams) {
                 $scope.mssg = $stateParams.msg;
@@ -30,11 +30,15 @@ angular.module('starter', ['ionic'])
     }
 
      var push = PushNotification.init({ "android": {"senderID": "510791354931", "sound": "true" }});
+     var f = false;
 
      push.on('registration', function(data){
 //       alert(data.registrationId);
        RequestsService.register(data.registrationId).then(function(response) {
-         alert('Registered!');
+          if (!f) {
+            f = true;
+            alert('Registered!');
+          }
        });
      });
 
